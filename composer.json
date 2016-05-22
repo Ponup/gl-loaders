@@ -1,0 +1,23 @@
+{
+    "name": "ponup/gl-loaders",
+    "description": "Loaders for many file formats used in OpenGL",
+    "type": "library",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Santiago Lizardo",
+            "email": "santiago.lizardo@gmail.com"
+        }
+    ],
+    "minimum-stability" : "dev",
+    "prefer-stable" : true,
+    "require": {
+        "ponup/glm": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.3"
+    },
+    "autoload": {
+        "psr-4": {"Ponup\\GlLoaders\\": "src/"}
+    }
+}
