@@ -92,7 +92,7 @@ class WavefrontObj {
     }
 
     public function __toString() {
-        return sprintf('Obj( Num vertices: %d, Num faces: %d )', count($this->vertices), count($this->verticesIndices));
+        return sprintf('Obj( Num vertices: %d, Num normals: %d, Num faces: %d )', count($this->vertices), count($this->normals), count($this->verticesIndices));
     }
 };
 

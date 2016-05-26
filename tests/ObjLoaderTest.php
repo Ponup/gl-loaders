@@ -26,8 +26,8 @@ class ObjLoaderTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertCount(8, $obj->getVertices());
         $this->assertCount(4, $obj->getTextureCoordinates());
-        $this->assertCount(6, $obj->getVertexNormals());
-        $this->assertCount(12, $obj->getVertexFaces());
+        $this->assertCount(8, $obj->getVertexNormals());
+        $this->assertCount(36, $obj->getVertexFaces());
     }
 }
 
