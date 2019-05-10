@@ -1,7 +1,7 @@
 <?php
 namespace Ponup\GlLoaders;
 
-class ObjLoaderTest extends \PHPUnit_Framework_TestCase {
+class ObjLoaderTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var ObjLoader

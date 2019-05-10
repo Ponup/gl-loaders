@@ -1,7 +1,7 @@
 <?php
 namespace Ponup\GlLoaders;
 
-class ImageLoaderTest extends \PHPUnit_Framework_TestCase {
+class ImageLoaderTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var ImageLoader 
