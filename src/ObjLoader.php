@@ -1,157 +1,65 @@
 <?php
 namespace Ponup\GlLoaders;
 
+use \glm\vec2;
 use \glm\vec3;
-
-class Vec2 { public $x, $y; }
-class Mesh extends \Ponup\GlLoaders\WavefrontObj {
-    public $vbo_vertices, $vbo_normals, $ibo_elements;
-
-    public function upload() {
-        $verticesObjects = $this->getVertices();
-        $vertices = [];
-        foreach($verticesObjects as $vertexObject) {
-            $vertices[] = $vertexObject->x;
-            $vertices[] = $vertexObject->y;
-            $vertices[] = $vertexObject->z;
-        }
-
-        if (count($vertices) > 0) {
-          glGenBuffers(1, $this->vbo_vertices2); $this->vbo_vertices = $this->vbo_vertices2[0];
-          glBindBuffer(GL_ARRAY_BUFFER, $this->vbo_vertices);
-          glBufferData(GL_ARRAY_BUFFER, count($vertices) * 4,
-               $vertices, GL_STATIC_DRAW);
-        }
-
-        $normalObjects = $this->getVertexNormals();
-        $normals = [];
-        foreach($normalObjects as $normalObject) {
-            $normals[] = $normalObject->x;
-            $normals[] = $normalObject->y;
-            $normals[] = $normalObject->z;
-        }
-
-        if (count($normals) > 0) {
-          glGenBuffers(1, $this->vbo_normals2); $this->vbo_normals = $this->vbo_normals2[0];
-          glBindBuffer(GL_ARRAY_BUFFER, $this->vbo_normals);
-          glBufferData(GL_ARRAY_BUFFER, count($normals) * 4,
-               $normals, GL_STATIC_DRAW);
-        }
-
-        if (count($this->verticesIndices) > 0) {
-        $indices = $this->getVertexFaces(); 
-        $this->elements = array_map(function($index) { return $index - 1; }, $indices);
-
-          glGenBuffers(1, $this->ibo_elements2); $this->ibo_elements = $this->ibo_elements2[0];
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, $this->ibo_elements);
-          glBufferData(GL_ELEMENT_ARRAY_BUFFER, count($this->elements) * 4,
-               $this->elements, GL_STATIC_DRAW);
-        }
-    }
-
-    public function draw() {
-$attribute_v_coord = 0;
-    if ($this->vbo_vertices != 0) {
-      glEnableVertexAttribArray($attribute_v_coord);
-      glBindBuffer(GL_ARRAY_BUFFER, $this->vbo_vertices);
-      glVertexAttribPointer(
-        $attribute_v_coord,  // attribute
-        4,                  // number of elements per vertex, here (x,y,z,w)
-        GL_FLOAT,           // the type of each element
-        GL_FALSE,           // take our values as-is
-        0,                  // no extra data between each position
-        0                   // offset of first element
-      );
-    }
-
-$attribute_v_normal = 1;
-    if ($this->vbo_normals != 0) {
-      glEnableVertexAttribArray($attribute_v_normal);
-      glBindBuffer(GL_ARRAY_BUFFER, $this->vbo_normals);
-      glVertexAttribPointer(
-        $attribute_v_normal, // attribute
-        3,                  // number of elements per vertex, here (x,y,z)
-        GL_FLOAT,           // the type of each element
-        GL_FALSE,           // take our values as-is
-        0,                  // no extra data between each position
-        0                   // offset of first element
-      );
-    }
-
-    /* Push each element in buffer_vertices to the vertex shader */
-    if ($this->ibo_elements != 0) {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, $this->ibo_elements);
-$a = count($this->verticesIndices);
-      glDrawElements(GL_TRIANGLES, $a, GL_UNSIGNED_SHORT, 0);
-    } else {
-$b = count($this->vertices);
-      glDrawArrays(GL_TRIANGLES, 0, $b);
-    }
-
-    if ($this->vbo_normals != 0) {
-      //glDisableVertexAttribArray($attribute_v_normal);
-    }
-    if ($this->vbo_vertices != 0) {
-      //glDisableVertexAttribArray($attribute_v_coord);
-    }
-  }
-
-}
 
 /**
  * This class loads Wavefront (.obj) files and returns their vertices data.
  *
  * @see https://people.cs.clemson.edu/~dhouse/courses/405/docs/brief-obj-file-format.html
  */
-class ObjLoader {
+class ObjLoader
+{
 
     /**
      * @param string $path
      * @return WavefrontObj
      */
-    public function load($path) {
-        if(!file_exists($path)) {
+    public function load($path)
+    {
+        if (!file_exists($path)) {
             throw new LoaderException('File not found: ' . $path);
         }
 
         $obj = new WavefrontObj;
-//        $obj = new Mesh;
+        //        $obj = new Mesh;
 
         $file = new \SplFileObject($path);
         $file->setFlags(\SplFileObject::DROP_NEW_LINE);
 
-        while(!$file->eof()) {
+        while (!$file->eof()) {
             $line = $file->fgets();
-            if(empty($line)) {
+            if (empty($line)) {
                 continue;
             }
-            if($line[0] == '#') {
+            if ($line[0] == '#') {
                 continue;
             }
             $tokens = explode(' ', $line);
             $type = $tokens[0];
 
-            switch($type) {
+            switch ($type) {
                 case 'v':
                     $vertex = new vec3;
                     list($vertex->x, $vertex->y, $vertex->z) = sscanf($line, 'v %f %f %f');
                     $obj->vertices[] = $vertex;
-                break;
+                    break;
                 case 'vt':
                     $uv = new Vec2;
                     list($uv->x, $uv->y) = sscanf($line, 'vt %f %f');
                     $obj->textureCoordinates[] = $uv;
-                break;
+                    break;
                 case 'vn':
                     $vertex = new vec3;
                     list($vertex->x, $vertex->y, $vertex->z) = sscanf($line, 'vn %f %f %f');
                     $obj->normals[] = $vertex;
-                break;
+                    break;
                 case 'f':
                     $vertin = new vec3;
                     $uvin = new vec3;
                     $normin = new vec3;
-                    if(preg_match('@f -?\d+/-?\d+/-?\d+ -?\d+/-?\d+/-?\d+ -?\d+/-?\d+/-?\d+@', $line)) {
+                    if (preg_match('@f -?\d+/-?\d+/-?\d+ -?\d+/-?\d+/-?\d+ -?\d+/-?\d+/-?\d+@', $line)) {
                         list(
                             $vertin->x, $uvin->x, $normin->x,
                             $vertin->y, $uvin->y, $normin->y,
@@ -161,7 +69,7 @@ class ObjLoader {
                         $obj->verticesIndices[] = $vertin->y;
                         $obj->verticesIndices[] = $vertin->z;
                     }
-                    if(preg_match('@f -?\d+//-?\d+ -?\d+//-?\d+ -?\d+//-?\d+@', $line)) {
+                    if (preg_match('@f -?\d+//-?\d+ -?\d+//-?\d+ -?\d+//-?\d+@', $line)) {
                         list(
                             $vertin->x, $normin->x,
                             $vertin->y, $normin->y,
@@ -170,9 +78,7 @@ class ObjLoader {
                         $obj->verticesIndices[] = $vertin->x;
                         $obj->verticesIndices[] = $vertin->y;
                         $obj->verticesIndices[] = $vertin->z;
-                    }
-
-                    elseif(preg_match('@f\s+\d+\s+\d+\s+\d+@', $line)) {
+                    } elseif (preg_match('@f\s+\d+\s+\d+\s+\d+@', $line)) {
                         list($vertin->x, $vertin->y, $vertin->z) = sscanf($line, 'f  %d  %d  %d');
                         $obj->verticesIndices[] = $vertin->x;
                         $obj->verticesIndices[] = $vertin->y;
@@ -181,35 +87,34 @@ class ObjLoader {
                     break;
             }
         }
-    $obj->normals = [];
-    $obj->normals = array_fill(0, count($obj->vertices), new vec3(0.0, 0.0, 0.0));
-    $nb_seen = array_fill(0, count($obj->vertices), 0);
-    for ($i = 0; $i < count($obj->verticesIndices); $i+=3) {
-        $ia = $obj->verticesIndices[$i] - 1;
-        $ib = $obj->verticesIndices[$i+1]- 1;
-        $ic = $obj->verticesIndices[$i+2] -1;
-        $normal = \glm\normalize(\glm\cross(
-            (($obj->vertices[$ib]))->substract(($obj->vertices[$ia])),
-            (($obj->vertices[$ic]))->substract(($obj->vertices[$ia]))
-        ));
+        $obj->normals = [];
+        $obj->normals = array_fill(0, count($obj->vertices), new vec3(0.0, 0.0, 0.0));
+        $nb_seen = array_fill(0, count($obj->vertices), 0);
+        for ($i = 0; $i < count($obj->verticesIndices); $i += 3) {
+            $ia = $obj->verticesIndices[$i] - 1;
+            $ib = $obj->verticesIndices[$i + 1] - 1;
+            $ic = $obj->verticesIndices[$i + 2] - 1;
+            $normal = \glm\normalize(\glm\cross(
+                (($obj->vertices[$ib]))->substract(($obj->vertices[$ia])),
+                (($obj->vertices[$ic]))->substract(($obj->vertices[$ia]))
+            ));
 
-        $v = array($ia, $ib, $ic);
-        for ($j = 0; $j < 3; $j++) {
-            $cur_v = $v[$j];
-            $nb_seen[$cur_v]++;
-            if ($nb_seen[$cur_v] == 1) {
-                $obj->normals[$cur_v] = $normal;
-            } else {
-                // average
-                $obj->normals[$cur_v]->x = $obj->normals[$cur_v]->x * (1.0 - 1.0/$nb_seen[$cur_v]) + $normal->x * 1.0/$nb_seen[$cur_v];
-                $obj->normals[$cur_v]->y = $obj->normals[$cur_v]->y * (1.0 - 1.0/$nb_seen[$cur_v]) + $normal->y * 1.0/$nb_seen[$cur_v];
-                $obj->normals[$cur_v]->z = $obj->normals[$cur_v]->z * (1.0 - 1.0/$nb_seen[$cur_v]) + $normal->z * 1.0/$nb_seen[$cur_v];
-                $obj->normals[$cur_v] = \glm\normalize($obj->normals[$cur_v]);
-            }   
-        }   
-    }
+            $v = array($ia, $ib, $ic);
+            for ($j = 0; $j < 3; $j++) {
+                $cur_v = $v[$j];
+                $nb_seen[$cur_v]++;
+                if ($nb_seen[$cur_v] == 1) {
+                    $obj->normals[$cur_v] = $normal;
+                } else {
+                    // average
+                    $obj->normals[$cur_v]->x = $obj->normals[$cur_v]->x * (1.0 - 1.0 / $nb_seen[$cur_v]) + $normal->x * 1.0 / $nb_seen[$cur_v];
+                    $obj->normals[$cur_v]->y = $obj->normals[$cur_v]->y * (1.0 - 1.0 / $nb_seen[$cur_v]) + $normal->y * 1.0 / $nb_seen[$cur_v];
+                    $obj->normals[$cur_v]->z = $obj->normals[$cur_v]->z * (1.0 - 1.0 / $nb_seen[$cur_v]) + $normal->z * 1.0 / $nb_seen[$cur_v];
+                    $obj->normals[$cur_v] = \glm\normalize($obj->normals[$cur_v]);
+                }
+            }
+        }
 
         return $obj;
     }
 }
-
