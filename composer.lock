@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afcedc6de88fad2126877d46f59986b3",
+    "content-hash": "cc890b4b10dde0e2195d30688a88e119",
     "packages": [
         {
             "name": "ponup/glm",
-            "version": "dev-master",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ponup/glm.git",
-                "reference": "e3b09017e65736dbf0dc60a95eabf952466bf1bd"
+                "reference": "9de080ce427d0fd3ea4a56de05ea617df688068a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ponup/glm/zipball/e3b09017e65736dbf0dc60a95eabf952466bf1bd",
-                "reference": "e3b09017e65736dbf0dc60a95eabf952466bf1bd",
+                "url": "https://api.github.com/repos/Ponup/glm/zipball/9de080ce427d0fd3ea4a56de05ea617df688068a",
+                "reference": "9de080ce427d0fd3ea4a56de05ea617df688068a",
                 "shasum": ""
             },
             "require-dev": {
@@ -34,7 +34,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-3.0-or-later"
+                "MIT"
             ],
             "authors": [
                 {
@@ -43,7 +43,7 @@
                 }
             ],
             "description": "A port of the OpenGL Mathematics library (GLM) to PHP",
-            "time": "2019-05-11T10:21:25+00:00"
+            "time": "2019-05-12T14:13:34+00:00"
         }
     ],
     "packages-dev": [
@@ -1521,10 +1521,8 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "ponup/glm": 20
-    },
+    "minimum-stability": "stable",
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": [],
